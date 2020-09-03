@@ -112,9 +112,9 @@ func GenCards() []Card {
 		cards = append(cards, WildCard, WildDrawFourCard)
 	}
 
-	if len(cards) != 54 {
-		panic("invalid card set")
-	}
+	//if len(cards) != 54 {
+	//	panic("invalid card set")
+	//}
 
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
