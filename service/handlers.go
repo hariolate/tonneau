@@ -196,6 +196,7 @@ func (s *Service) GetProfilePartHandler(c *gin.Context) {
 
 func (s *Service) SetupUserHandlersFor(router gin.IRouter) {
 	router.
+		Use(s.MakeShowBodyMiddleWare()).
 		POST("/user/login", s.LoginHandler). // /api/user/login
 		POST("/user/signup", s.SignupHandler).
 		POST("/user/logout", s.MakeAuthRequiredMiddleware(), s.LogoutHandler).

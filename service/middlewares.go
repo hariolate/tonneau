@@ -1,10 +1,13 @@
 package service
 
 import (
+	"bytes"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gtihub.com/hariolate/tonneau/service/models"
 	"gtihub.com/hariolate/tonneau/shared"
+	"io"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -52,5 +55,44 @@ func (s *Service) MakeAuthRequiredMiddleware() func(ctx *gin.Context) {
 		}
 
 		c.Next()
+	}
+}
+
+func (s *Service) MakeShowBodyMiddleWare() func(ctx *gin.Context) {
+	return DebugLogger()
+}
+
+type MyReadCloser struct {
+	rc io.ReadCloser
+	w  io.Writer
+}
+
+func (rc *MyReadCloser) Read(p []byte) (n int, err error) {
+	n, err = rc.rc.Read(p)
+	log.Println("run here", n, err)
+	if n > 0 {
+		if n, err := rc.w.Write(p[:n]); err != nil {
+			return n, err
+		}
+	}
+	return n, err
+}
+
+func (rc *MyReadCloser) Close() error {
+	return rc.rc.Close()
+}
+
+func DebugLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		log.Println(c.Request.RequestURI)
+		if c.Request.Method == http.MethodPost {
+			var buf bytes.Buffer
+			newBody := &MyReadCloser{c.Request.Body, &buf}
+			c.Request.Body = newBody
+			c.Next()
+			log.Println(buf.String())
+		} else {
+			c.Next()
+		}
 	}
 }
