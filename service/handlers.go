@@ -1,8 +1,10 @@
 package service
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"gtihub.com/hariolate/tonneau/service/models"
 	"gtihub.com/hariolate/tonneau/shared"
 	"net/http"
@@ -54,20 +56,20 @@ func (s *Service) SignupHandler(c *gin.Context) {
 	}
 
 	if _, err := s.GetUserByEmail(body.Email); err != nil {
-		//if errors.Is(err, gorm.ErrRecordNotFound)  {
-		newUser, err := s.CreateUser(body)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, shared.ErrorMessageResponse(err.Error()))
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newUser, err := s.CreateUser(body)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, shared.ErrorMessageResponse(err.Error()))
+				return
+			}
+			c.JSON(http.StatusOK, shared.SuccessDataResponse(gin.H{
+				"uid":   newUser.ID,
+				"email": newUser.Email,
+			}))
 			return
 		}
-		c.JSON(http.StatusOK, shared.SuccessDataResponse(gin.H{
-			"uid":   newUser.ID,
-			"email": newUser.Email,
-		}))
+		_ = c.Error(err)
 		return
-		//}
-		//_ = c.Error(err)
-		//return
 	}
 	c.JSON(http.StatusConflict, shared.ErrorMessageResponse("user already exists."))
 }
