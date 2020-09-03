@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: tools/dev/Dockerfile
+    expose:
+      - 80
+    ports:
+      - '8000:80'
+    volumes:
+      - ./:/app
+    restart: always
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres
+    ports:
+      - "8001:5432"
+    environment:
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+      - POSTGRES_DB=app
+    volumes:
+      - ./tools/dev/db_data:/var/lib/postgresql/data
+    restart: always
+  redis:
+    image: redis
+    ports:
+      - "8002:6379"
+    volumes:
+      - ./tools/dev/redis_data:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always

@@ -1,0 +1,11 @@
+{
+  "storage": {
+    "db_type": "postgres",
+    "db_dsn": "host=db user=app password=app dbname=app sslmode=disable TimeZone=Asia/Shanghai",
+    "redis_url": "redis://redis"
+  },
+  "serve_on": {
+    "addr": "0.0.0.0",
+    "port": "80"
+  }
+}
