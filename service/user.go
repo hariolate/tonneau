@@ -36,7 +36,7 @@ func (s *Service) CreateUser(u models.Signup) (*models.User, error) {
 		Password: string(pass),
 	}
 
-	if err := s.db.Model(&models.User{}).Create(&newUser).Error; err != nil {
+	if err := s.db.Create(&newUser).Error; err != nil {
 		return nil, err
 	}
 
@@ -152,31 +152,31 @@ func (s *Service) GetUserProfile(uid uint) (*models.Profile, error) {
 	return &user.Profile, nil
 }
 
-func (s *Service) AddMatchResultFor(uid uint, result models.MatchResult) error {
-	user, err := s.GetUserByUID(uid)
-	if err != nil {
-		return err
-	}
-
-	isUserInMatch := false
-
-	for _, player := range result.Players {
-		if player.ID == user.ID {
-			isUserInMatch = true
-		}
-	}
-
-	if !isUserInMatch {
-		return errors.New("user not in match")
-	}
-
-	if len(user.Profile.Matches) >= 20 {
-		user.Profile.Matches = user.Profile.Matches[1:]
-	}
-
-	user.Profile.Matches = append(user.Profile.Matches, result)
-	return nil
-}
+//func (s *Service) AddMatchResultFor(uid uint, result models.MatchResult) error {
+//	user, err := s.GetUserByUID(uid)
+//	if err != nil {
+//		return err
+//	}
+//
+//	isUserInMatch := false
+//
+//	for _, player := range result.Players {
+//		if player.ID == user.ID {
+//			isUserInMatch = true
+//		}
+//	}
+//
+//	if !isUserInMatch {
+//		return errors.New("user not in match")
+//	}
+//
+//	if len(user.Profile.Matches) >= 20 {
+//		user.Profile.Matches = user.Profile.Matches[1:]
+//	}
+//
+//	user.Profile.Matches = append(user.Profile.Matches, result)
+//	return nil
+//}
 
 func (s *Service) InvalidateAllLoginTokens(uid uint) error {
 	redisTokens := fmt.Sprintf("user:%d:tokens", uid)

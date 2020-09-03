@@ -1,10 +1,8 @@
 package service
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"gtihub.com/hariolate/tonneau/service/models"
 	"gtihub.com/hariolate/tonneau/shared"
 	"net/http"
@@ -56,20 +54,20 @@ func (s *Service) SignupHandler(c *gin.Context) {
 	}
 
 	if _, err := s.GetUserByEmail(body.Email); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			newUser, err := s.CreateUser(body)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, shared.ErrorMessageResponse(err.Error()))
-				return
-			}
-			c.JSON(http.StatusOK, shared.SuccessDataResponse(gin.H{
-				"uid":   newUser.ID,
-				"email": newUser.Email,
-			}))
+		//if errors.Is(err, gorm.ErrRecordNotFound)  {
+		newUser, err := s.CreateUser(body)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, shared.ErrorMessageResponse(err.Error()))
 			return
 		}
-		_ = c.Error(err)
+		c.JSON(http.StatusOK, shared.SuccessDataResponse(gin.H{
+			"uid":   newUser.ID,
+			"email": newUser.Email,
+		}))
 		return
+		//}
+		//_ = c.Error(err)
+		//return
 	}
 	c.JSON(http.StatusConflict, shared.ErrorMessageResponse("user already exists."))
 }
@@ -178,8 +176,8 @@ func (s *Service) GetProfilePartHandler(c *gin.Context) {
 	switch part {
 	case "alias":
 		value.Value = profile.Alias
-	case "matches":
-		value.Value = profile.Matches
+	//case "matches":
+	//	value.Value = profile.Matches
 	case "picture":
 		value.Value = profile.Picture
 	case "trophies":
@@ -197,7 +195,8 @@ func (s *Service) GetProfilePartHandler(c *gin.Context) {
 func (s *Service) SetupUserHandlersFor(router gin.IRouter) {
 	router.
 		POST("/user/login", s.LoginHandler). // /api/user/login
-		POST("/user/signup", s.SignupHandler).POST("/user/logout", s.MakeAuthRequiredMiddleware(), s.LogoutHandler).
+		POST("/user/signup", s.SignupHandler).
+		POST("/user/logout", s.MakeAuthRequiredMiddleware(), s.LogoutHandler).
 		GET("/user/logout", s.MakeAuthRequiredMiddleware(), s.LogoutHandler).
 		GET("/user/profile", s.MakeAuthRequiredMiddleware(), func(context *gin.Context) {
 			context.Redirect(http.StatusPermanentRedirect, "/user/profile/get")

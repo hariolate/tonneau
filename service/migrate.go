@@ -6,5 +6,5 @@ import (
 )
 
 func (s *Service) autoMigrate() {
-	shared.NoError(s.db.AutoMigrate(&models.User{}, &models.MatchResult{}))
+	shared.NoError(s.db.AutoMigrate(&models.User{}, &models.Profile{}))
 }

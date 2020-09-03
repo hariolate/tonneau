@@ -43,3 +43,57 @@ func main() {
 		log.Fatalln(err)
 	}
 }
+
+//package main
+//
+//import (
+//	"flag"
+//)
+//
+//var (
+//	configFile = flag.String("config", "config.json", "specify config file")
+//	debug      = flag.Bool("debug", true, "is in debug env or not")
+//)
+
+//type User struct {
+//	gorm.Model
+//	CreditCard CreditCard
+//}
+//
+//type CreditCard struct {
+//	gorm.Model
+//	Number string
+//	UserID uint
+//}
+//
+//type MatchResult struct {
+//	gorm.Model
+//
+//	Players []User
+//	Scores  []int
+//
+//	RoundCount int
+//}
+//
+//type User struct {
+//	gorm.Model
+//	UserProfile UserProfile
+//	Email       string `gorm:"unique" validate:"required,email"`
+//	Password    string `validate:"required,min=3"`
+//}
+//
+//type UserProfile struct {
+//	gorm.Model
+//	Alias    string `json:"alias"`
+//	Picture  []byte `json:"picture"`
+//	Trophies int    `json:"trophies"`
+//	UserID uint
+//}
+//
+//func main() {
+//	flag.Parse()
+//	conf := config.MustFromFile(*configFile).MustParse()
+//	conf.DBConn.AutoMigrate(&User{}, &UserProfile{})
+//	var u User
+//	conf.DBConn.Create(&u)
+//}

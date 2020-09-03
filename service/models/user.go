@@ -7,10 +7,9 @@ import (
 
 type User struct {
 	gorm.Model
+	Profile  Profile
 	Email    string `gorm:"unique" validate:"required,email"`
 	Password string `validate:"required,min=3"`
-
-	Profile Profile
 }
 
 func (u *User) Validate() error {

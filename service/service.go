@@ -18,7 +18,9 @@ func NewService(db *gorm.DB, r *redis.Client, c context.Context) *Service {
 }
 
 func FromConfig(c *config.Parsed) *Service {
-	return &Service{
+	srv := &Service{
 		c.DBConn, c.RedisClient, c.Context,
 	}
+	srv.autoMigrate()
+	return srv
 }
